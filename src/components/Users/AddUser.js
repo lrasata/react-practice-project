@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import ErrorModal from "../UI/ErrorModal";
 import Button from "../UI/Button";
@@ -7,13 +7,17 @@ import classes from "./AddUser.module.css";
 import Wrapper from "../Helpers/Wrapper";
 
 const AddUser = (props) => {
-  const [enteredUserName, setEnteredUserName] = useState("");
-  const [enteredAge, setEnteredAge] = useState("");
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
+
   const [error, setError] = useState();
 
   const addUserHandler = (event) => {
     // onSubmit prevent from sending a request so not reloading the page
     event.preventDefault();
+
+    const enteredUserName = nameInputRef.current.value;
+    const enteredAge = ageInputRef.current.value;
 
     if (enteredUserName.trim().length === 0 || enteredAge.trim().length === 0) {
       setError({
@@ -30,16 +34,8 @@ const AddUser = (props) => {
       return;
     }
     props.onAddUser(enteredUserName, enteredAge);
-    setEnteredAge("");
-    setEnteredUserName("");
-  };
-
-  const userNameChangeHandler = (event) => {
-    setEnteredUserName(event.target.value);
-  };
-
-  const ageChangeHandler = (event) => {
-    setEnteredAge(event.target.value);
+    nameInputRef.current.value = '';
+    ageInputRef.current.value = '';
   };
 
   const errorHandler = () => {
@@ -61,15 +57,13 @@ const AddUser = (props) => {
           <input
             type="text"
             id="username"
-            value={enteredUserName}
-            onChange={userNameChangeHandler}
+            ref={nameInputRef}
           ></input>
           <label htmlFor="age">Age (Years)</label>
           <input
             type="number"
             id="age"
-            value={enteredAge}
-            onChange={ageChangeHandler}
+            ref={ageInputRef}
           ></input>
           <Button type="submit">Add user</Button>
         </form>
